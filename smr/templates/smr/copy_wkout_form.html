@@ -1,0 +1,45 @@
+{% extends "smr_base/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}메모 작성 | ShareMyRoutine{% endblock title %}
+
+{% block content %}
+<div class="account-background">
+  <main class="account">
+    <div class="title">
+      <a href="{% url 'index' %}">
+        <img class="logo" src="{% static 'smr/images/logo.png' %}" alt="ShareMyRoutine Logo">
+      </a>
+    </div>
+    <div style="font-size: 20px; font-weight: bold; text-align:center; margin-bottom: 20px;">
+        먼저 운동일지 페이지를 만들어야 합니다.
+    </div>
+    <div style="font-size: 16px; text-align:center; margin-bottom: 30px">
+        {{ wkout.author.username }}<br>
+        루틴: &nbsp; {{ wkout.memo }}
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="compo">
+        {{ form.memo|add_class:"input"|attr:"placeholder:메모 작성(운동 목적, 컨디션 등)"|add_error_class:"error" }}
+        {% for error in form.memo.errors %}
+          <div class="form-error error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="compo">
+        운동 부위: &nbsp;{{ form.ex_part|add_error_class:"error" }}
+        {% for error in form.ex_part.errors %}
+          <div class="form-error error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div>저장 후 다시 복사해주세요!</div>
+      <button class="reset-pw-button" type="submit">저장하기</button>
+    </form>
+    
+    <div class="info">
+      <a class="link" href="{% url 'post-detail' post.id %}">취소</a>
+    </div>
+  </main>
+</div>
+{% endblock content %}

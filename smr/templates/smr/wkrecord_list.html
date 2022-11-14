@@ -1,0 +1,150 @@
+{% extends 'smr_base/base_with_navbar.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}운동 기록 작성 | ShareMyRoutine{% endblock title %}
+
+
+{% block content %}
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<div class="wk-record-main">
+    <div class="wkout-info">
+        <div style="text-align:right;">
+            <button type="button" style="font-size:12px; color: white; border: 0; background-color:mediumaquamarine;" onclick="location.href='{%url 'wkout-update' wkout.id%}';">수정</button>
+            <span style="font-size: 12px; color: white;"> | <span>
+            <button  type="button" data-bs-toggle="modal" data-bs-target="#wkoutDeleteModal" style="font-size:12px; color: white;background-color:mediumaquamarine; border: 0;">삭제</button>
+        </div>
+        <div class="modal fade" id="wkoutDeleteModal" tabindex="-1" aria-labelledby="wkoutDeleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div style="display:flex; justify-content: space-between; margin-top: 10px;margin-left:25px; margin-right:10px;">
+                        <h5 class="modal-title" id="wkoutDeleteModalLabel">댓글 삭제</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>이 운동 일지를 삭제하시겠습니까?</p><br>
+                        <p>{{ wkout.memo }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="delete-button">
+                            <form action="{% url 'wkout-delete' wkout.id %}" method="POST" autocomplete="off">
+                                {% csrf_token %}
+                                <button class="post-delete">삭제</button>
+                                <button type="button" class="delete-cancel" data-bs-dismiss="modal">취소</button>
+                            </form>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="wkrecord_volume">Volume: {{ total_vol }}</div>
+        <div class="wkrecord_memo">{{ wkout.memo }}</div>
+        <div style="display:flex; flex-direction:row; justify-content: space-between;">
+            <div class="wkrecord_ex_part">{{ wkout.ex_part }}</div>
+            <div class="post-button"><a style="text-decoration: none; color: inherit;" href="{% url 'post-create' wkout.id %}">+Post</a></div>
+        </div>    
+    </div>
+    <div class="wk-record">
+        {% for wkrecord in wkrecords %}
+            <div class="wkrecord">
+                <div class="wk-name"><b>{{wkrecord.exercise}}</b></div> |
+                <div class="weight-reps">
+                    <div class='wkrecord-weight'>{{wkrecord.weight}} kg</div>
+                    <div class='wkrecord-reps'>{{wkrecord.reps}} reps</div>
+                </div>
+                <div style="display:flex; flex-direction:row; margin-bottom:4px;">
+                    <button style="width:37px; border: 0; background-color:white; font-size: 12px; color:gray" type="button" onclick="location.href='{%url 'wkrecord-update' wkrecord.id%}';"> 수정 </button>
+                    <button style="width:37px; border: 0px; font-size:12px; color:gray; background-color: white;" type="button" data-bs-toggle="modal" data-bs-target="#wkrecordDeleteModal-{{ wkrecord.id }}">
+                        삭제
+                    </button>
+                    {% comment %} modal {% endcomment %}
+                    <div class="modal fade" id="wkrecordDeleteModal-{{ wkrecord.id }}" tabindex="-1" aria-labelledby="wkrecordDeleteModalLabel" aria-hidden="true">
+                        <div style="width: 350px;" class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">세트 삭제</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>이 세트를 삭제하시겠습니까?</p><br>
+                                <p>{{ wkrecord.exercise }}&nbsp;{{wkrecord.weight}}kg &nbsp;|&nbsp; {{wkrecord.reps}}reps</p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="delete-button">
+                                    <form action="{% url 'wkrecord-delete' wkrecord.wkout.id wkrecord.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button class="post-delete">삭제</button>
+                                        <button type="button" class="delete-cancel" data-bs-dismiss="modal">취소</button>
+                                    </form>
+                                </div>  
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    {% comment %} modal {% endcomment %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div id="add_wk" class="add_wk"><b>운동 추가</b></div>
+</div>
+
+
+
+<div id="modal_add_wk" class="modal_overlay">
+    <div class="modal_window">
+        <div class="title-part">
+            <div class="empty-box"></div>
+            <div class="modal-title">운동 추가하기</div>
+            <div class="empty-box"></div>
+        </div>
+
+        <form class="wkrecord-create-form" action="" method="post">
+            {% csrf_token %}
+            <section class="input-area">
+                <div>
+                    {{ form.exercise}}
+                </div>
+                <div>
+                    {{ form.weight|add_class:"input"|add_error_class:"error" }}kg&nbsp;&nbsp;
+                    {% for error in form.weight.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.reps|add_class:"input" }}reps
+                </div>
+            </section>
+            <div class="wkrecord-btn">
+                <button class="follow-btn" type="submit">저장</button>
+                <div class="unfollow-btn" id="close-WkRecord">취소</div>
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+
+<script>
+    const modalWkRecord = document.getElementById("modal_add_wk");
+    const buttonAddWkRecord = document.getElementById("add_wk");
+    buttonAddWkRecord.addEventListener("click", e => {
+        modalWkRecord.style.top = window.pageYOffset + 'px';
+        modalWkRecord.style.display = "flex";
+        document.body.style.overflowY = "hidden";
+    });
+
+    const buttonCloseWkRecord = document.getElementById("close-WkRecord");
+    buttonCloseWkRecord.addEventListener("click", e => {
+        modalWkRecord.style.display = "none";
+        document.body.style.overflowY = 'visible';
+    })
+
+    
+</script>
+{% endblock content %}
+
+
+
+
+

@@ -1,0 +1,220 @@
+{% extends 'smr_base/base_with_navbar.html'%}
+{% load static %}
+{% load widget_tweaks %}
+{% block content%}
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<div class="main-contents">
+    <div class="left-content">
+        <div class="post">
+            <div class="profile">
+                <div style="display:flex; felx-direction:row;">
+                    <a href="{% url 'profile' post.author.id %}">
+                        <div class="profile-photo" style="background-image: url('{{ post.author.profile.profile_pic.url }}'); margin-right: 10px;"></div>
+                    </a>
+                    <div class="profile-name" style="font-size: 15px;">{{ post.author.username }}<br>2020-10-01</div>
+                </div>
+                <div class="workout-part">{{ post.wkout.ex_part }}</div>
+            </div>
+            <div class="post-photo-box">
+                <img class="post-photo" src="{{ post.image.url }}">
+            </div>
+            <div class="post-icons">
+                <div class="post-icon-menu">
+                    <form action="{% url 'process-like' post_ctype_id post.id %}" method="post">
+                        {% csrf_token %}
+                        <button class="likes-btn-big" style="margin-left: 2px;"type="submit">
+                            {% if likes_post %}
+                                <img class="post-icon" src="{% static 'smr/icons/full_like.png' %}">
+                            {% else %}
+                                <img class="post-icon" src="{% static 'smr/icons/empty_like.png' %}">
+                            {% endif %}
+                        </button>
+                    </form>
+                    <form action="{% url 'copy-wkout' post.wkout.id %}" method="post">
+                        {% csrf_token %}
+                        {% comment %} 운동 작성 일지가 존재할때 {% endcomment %}
+                        {% if wkout_exist %} 
+                            {% comment %} 복사본이 없다면 복사하러 간다.  {% endcomment %}
+                            {% if not copy_list %}
+                                <button style="border:0; background-color:white;" type='submit'>
+                                    <img class="post-icon" src="{% static 'smr/icons/copy.png' %}">
+                                </button>
+                            {% comment %} 복사본이 있으면 복사 불가 상태 {% endcomment %}
+                            {% else %}
+                                <img style="width: 33px;" src="{% static 'smr/icons/cant_copy.png' %}">
+                            {% endif %}
+                        {% comment %} 작성일지가 없다면 {% endcomment %}
+                        {% else %}
+                            {% comment %} 운동일지 만들러 가는 링크 {% endcomment %}
+                            <a href="{% url 'copy-wkout-create' post.wkout.id %}" >
+                                <img class="post-icon" src="{% static 'smr/icons/copy.png' %}">
+                            </a>
+                        {% endif %}
+                    </form>
+                </div>
+                {% if user == post.author %}
+                    <div class="post-controll">
+                        <a style="text-decoration: none;color: inherit;" href="{% url 'post-update' post.id %}">수정</a> &nbsp;|&nbsp; 
+                        <div id="delete_post" class="delete_post">삭제</div>
+                    </div>  
+                {% endif %}
+            </div>
+            <hr style="margin-top:10px; margin-bottom:10px">
+            <div class="post-content">
+                <div class="count-like"><b>{{ post.likes.count }}</b>명이 이 글을 좋아합니다.</div>
+                <div class="post-memo"><b>{{ post.wkout.memo }}</b><br></div>
+                <div class="post-describ">{{ post.content }}</div>
+                <div style="font-weight:bold; font-size:22px;" class="gap">MyRoutine</div>
+                <div class="routine-box">
+                    {% for wkrecord in wkrecords %}
+                        <div class="ex-wAndr"><span>{{wkrecord.exercise}}</span><span>{{wkrecord.weight}}kg | {{wkrecord.reps}}reps</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr style="margin-bottom: 8px;">
+            <div class="post-comment">
+                {% for comment in post.comments.all %}
+                    <div class="each-comment">
+                        <div>
+                            <a style="text-decoration: none; color: inherit; font-size: 14px;" href="{% url 'profile' comment.author.id %}"><b>{{comment.author.username }}</b></a>
+                            &nbsp;&nbsp;<span style="font-size: 13px;">{{ comment.content }}</span>
+                        </div>
+                        <div>
+                            {% if user == comment.author %}
+                                <div class="comment-control">
+                                    <button  type="button" data-bs-toggle="modal" data-bs-target="#commentUpdateModal-{{ comment.id }}" style="font-size:12px; color: gray;background-color:white; border: 0;">수정</button>
+                                    <span style="font-size:12px"> | </span>
+                                    <button  type="button" data-bs-toggle="modal" data-bs-target="#commentDeleteModal-{{ comment.id }}" style="font-size:12px; color: gray;background-color:white; border: 0;">삭제</button>
+                                </div>
+                                
+                                {% comment %} modal {% endcomment %}
+                                <div class="modal fade" id="commentDeleteModal-{{ comment.id }}" tabindex="-1" aria-labelledby="commentDeleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div style="display:flex; justify-content: space-between; margin-top: 10px;margin-left:25px; margin-right:10px;">
+                                            <h5 class="modal-title" id="commentUpdateModalLabel">댓글 삭제</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>이 댓글를 삭제하시겠습니까?</p><br>
+                                            <p>{{ comment.content }}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div class="delete-button">
+                                                <form action="{% url 'comment-delete' comment.id %}" method="POST" autocomplete="off">
+                                                    {% csrf_token %}
+                                                    <button class="post-delete">삭제</button>
+                                                    <button type="button" class="delete-cancel" data-bs-dismiss="modal">취소</button>
+                                                </form>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                {% comment %} modal {% endcomment %}
+                                <div class="modal fade" id="commentUpdateModal-{{ comment.id }}" tabindex="-1" aria-labelledby="commentUpdateModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div style="display:flex; justify-content: space-between; margin-top: 10px;margin-left:25px; margin-right:10px;">
+                                                <h5 class="modal-title" id="commentUpdateModalLabel">댓글 수정</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>{{ comment.content }}</p>
+                                                <form action="{% url 'comment-update' comment.id %}" method="POST" autocomplete="off">
+                                                    {% csrf_token %}
+                                                    <div>{{ form.content|add_class:"comment-form"|attr:"placeholder: 댓글 수정" }}</div>
+                                                    <div style="width: 145px; display:flex; margin-left:auto;justify-content: space-between">
+                                                        <button class="post-delete">저장</button>
+                                                        <button type="button" class="delete-cancel" data-bs-dismiss="modal">취소</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:row; justify-content:space-between; padding-top: 5px;">
+                        <div></div>
+                        <div style="display:flex; flex-direction:row; margin-right: 10px;">
+                            <form action="{% url 'process-like' comment_ctype_id comment.id %}" method="post">
+                                {% csrf_token %}
+                                <button class="likes-btn" type="submit">
+                                    {% if comment in liked_comments %}
+                                        <img style="width:8px; height:8px;" src="{% static 'smr/icons/full_like.png' %}">
+                                    {% else %}
+                                        <img style="width:8px; height:8px;" src="{% static 'smr/icons/empty_like.png' %}">
+                                    {% endif %}
+                                    <span style="font-size: 8px; color: gray;margin-top:6px;">좋아요 {{ comment.likes.count }}</span>
+                                </button>
+                            </form>
+                            
+                        </div>
+                    </div>
+                    <hr style="margin-top: 8px;margin-bottom: 8px;">
+                {% endfor %}
+            </div>
+            <div class="comment">
+                <form action="" method='post'>
+                    {% csrf_token %}
+                    <div class="comment-position">
+                        {{ form.content|add_class:"comment-form"|attr:"placeholder: 댓글을 작성해 주세요" }}
+                        <button class="comment-btn" type='submit' value='등록'>등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="right-content">
+        {% if wkout_exist %}
+            <div class="right-text">
+                오늘 진행 중이거나
+            </div>
+            <div class="right-text">
+                진행한 운동이 있습니다.
+            </div>
+            <div class="today-wkout">
+                {{ wkout_exist.memo }}<br>{{wkout_exist.ex_part}}
+            </div>
+            <a style="text-decoration:none; color: mediumaquamarine;" href="{% url 'wkrecord-list' wkout_exist.id %}"><div style="text-align:center;">운동 계속하기</div></a>
+        {% else %}
+            <div class="right-text">오늘 진행 중인 운동이 없습니다.</div>
+        {% endif %}
+    </div>
+</div>
+
+
+<div id="modal_delete_post" class="modal_overlay_delete">
+    <div class="modal_window_delete">
+        <p>이 게시글을 삭제하시겠습니까?</p><br>
+        <div class="delete-button">
+            <form action="{% url 'post-delete' post.id %}" method="POST">
+                {% csrf_token %}
+                <button class="post-delete">삭제</button>
+            </form>
+            <div id="cancel-delete-post" class="delete-cancel">취소</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById("modal_delete_post");
+    const buttonDeletePost = document.getElementById("delete_post");
+    buttonDeletePost.addEventListener("click", e => {
+        modal.style.top= window.pageYOffset + 'px';
+        modal.style.display = "flex";
+        document.body.style.overflowY = "hidden";
+    });
+
+    const buttonCloseModal = document.getElementById("cancel-delete-post");
+    buttonCloseModal.addEventListener("click", e => {
+        modal.style.display = "none";
+        document.body.style.overflowY = 'visible';
+    })
+
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% extends 'smr_base/base_with_navbar.html'%}
+{% load static %}
+
+{% block content%}
+
+<div class="main-contents-index">
+    <div class="left-content-index">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="mini-post" style="margin-right: 15px;">
+                    <a class="post-detail-hl" href="{% url 'post-detail' post.id %}">
+                        <div class="post-pf">
+                            <div class="profile-photo-small" style="background-image: url({{ post.author.profile.profile_pic.url }})"></div>
+                            <div class="profile-name-small">
+                                {{ post.author.username }}<br> {{post.dt_created|date:"Y/m/d"}}
+                            </div>
+                            <div class="workout-part-small">
+                                {{post.wkout.ex_part}}
+                            </div>
+                        </div>
+                        <div class="mini-post-photo-box" style="background-image: url('{{ post.image.url }}');"></div>
+                        <div class="mini-post-memo">
+                            <p><img style="width:8px; height:8px;" src="{% static 'smr/icons/full_like.png' %}">&nbsp;{{ post.likes.count }}</p>
+                            <p>{{ post.wkout.memo }}</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <img style="margin-left:auto; margin-right:auto; width: 320px;" src="{% static 'smr/icons/index_muscle.jpg' %}">
+            <div style="width: 300px; margin-left:auto; margin-right:auto; color: gray">
+                유저들의 다양한 운동 루틴을 확인하고, 팔로우도 해보세요!<br>
+                <a style="text-decoration: none; font-size: 13px; color: mediumaquamarine" href="{% url 'post-list'%}">다른 유저들의 운동루틴 보러가기</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class='right-content'>
+        <div style="margin-bottom: 20px;" class="right-text">안녕하세요, {{user.profile.nickname}}님!</div>
+        {% if wkout_exist %}
+            <div class="right-text">
+                오늘 진행 중이거나
+            </div>
+            <div class="right-text">
+                진행한 운동이 있습니다.
+            </div>
+            <div class="today-wkout">
+                {{ wkout_exist.memo }}<br>{{wkout_exist.ex_part}}
+            </div>
+            <a style="text-decoration:none; color: mediumaquamarine;" href="{% url 'wkrecord-list' wkout_exist.id %}"><div style="text-align:center;">운동 계속하기</div></a>
+        {% else %}
+            <div class="right-text">오늘 진행 중인 운동이 없습니다.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

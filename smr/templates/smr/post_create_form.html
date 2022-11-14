@@ -1,0 +1,49 @@
+{% extends 'smr_base/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="form-body">
+    <div class="title">
+        <a href="{% url 'index' %}">
+          <img class="logo" src="{% static 'smr/images/logo.png' %}" alt="ShareMyRoutine Logo">
+        </a>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="compo">
+          {{ form.content|add_class:"input"|attr:"placeholder:운동 루틴 설명"|add_error_class:"error" }}
+          {% for error in form.content.errors %}
+            <div class="form-error error-message">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% if post.image %}
+          <img style="width: 100px;" src="{{ post.image.url }}">
+        {% endif %}
+
+        <div class="compo">
+            {{ form.image}}
+            {% for error in form.image.errors %}
+                <div class="form-error error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+          {% if wkout %}
+            선택한 루틴: {{ wkout.memo }}
+          {% else %}
+            선택한 루틴: {{ post.wkout.memo }}
+          {% endif %}
+        </div>
+        <button class="reset-pw-button" type="submit">작성 완료</button>
+    </form>
+      <div class="info">
+        {% if wkout %}
+          <a class="link" href="{% url 'wkrecord-list' wkout.id %}">취소</a>
+        {% else %}
+          <a class="link" href="{% url 'post-detail' post.id %}">취소</a>
+        {% endif %}
+      </div>
+</div>
+
+{% endblock content %}
+

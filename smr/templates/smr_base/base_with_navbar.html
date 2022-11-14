@@ -1,0 +1,31 @@
+{% extends "smr_base/base.html" %}
+
+{% load static %}
+
+{% block header %}
+<div class="mynavbar">
+  <div class="mynavbar-content">
+    <div class="navbar-logo">
+      <a href="{% url 'index' %}">
+        <img class="nav-logo" src="{% static 'smr/images/logo.png' %}" alt="ShareMyRoutine Logo">
+      </a>
+    </div>
+    <div class='contents-icons'>
+        <span><a href="{% url 'index' %}"><img class="icon" src="{% static 'smr/icons/home.png'%}"></a></span>
+        <span><a href="{% url 'post-list' %}"><img class="icon" src="{% static 'smr/icons/search.png'%}"></a></span>
+        <span><a href="{% url 'wkout-list' %}"><img class="icon" src="{% static 'smr/icons/fitness.png'%}"></a></span>
+        <span><a href="{% url 'profile' user.id %}"><img class="icon" src="{% static 'smr/icons/profile.png'%}"></a></span>
+    </div>
+ 
+    <div class="account-controll">
+      {% if user.is_authenticated %}
+        <a class="account-c-link" href="{% url 'account_logout' %}"><b>Logout</b></a>
+      {% else %}
+        <a class="account-c-link" href="{% url 'account_login' %}"><b>Login</b></a>
+        <a class="account-c-link" href="{% url 'account_logout' %}"><b>Signup</b></a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock header %}
+

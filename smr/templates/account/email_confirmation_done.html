@@ -1,0 +1,10 @@
+
+<div style="width: 300px; text-align:center; margin-left: auto; margin-right: auto; margin-top: 150px; margin-bottom: 15px;color: gray;" class="email-confirm-done">
+    이메일 인증이 완료되었습니다.
+</div>
+
+{% if user.is_authenticated %}
+    <div style="width: 80px; margin-left: auto; margin-right: auto; text-align:center; border: solid 2px gray; border-radius: 17% / 50%"><a style="color: gray; text-decoration:none;" href="{% url 'index' %}">홈으로</a></div>
+{% else %}
+    <div style="width: 80px; margin-left: auto; margin-right: auto; text-align:center; border: solid 2px gray; border-radius: 17% / 50%"><a style="color: gray;  text-decoration:none;" hred="{% url 'account_login' %}">로그인</a></div>
+{% endif %}

@@ -1,0 +1,38 @@
+{% extends "smr_base/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Wkout 수정 | ShareMyRoutine{% endblock title %}
+
+{% block content %}
+<div class="account-background">
+  <main class="account">
+    <div class="title">
+      <a href="{% url 'index' %}">
+        <img class="logo" src="{% static 'smr/images/logo.png' %}" alt="ShareMyRoutine Logo">
+      </a>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="compo">
+        {{ form.memo|add_class:"input"|add_error_class:"error" }}
+        {% for error in form.memo.errors %}
+          <div class="form-error error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="compo">
+        {{ form.ex_part|add_error_class:"error" }}
+        {% for error in form.ex_part.errors %}
+          <div class="form-error error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <button class="reset-pw-button" type="submit">메모 수정하기</button>
+    </form>
+    
+    <div class="info">
+      <a class="link" href="{% url 'wkrecord-list' wkout.id %}">취소</a>
+    </div>
+  </main>
+</div>
+{% endblock content %}

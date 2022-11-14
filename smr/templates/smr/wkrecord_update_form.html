@@ -1,0 +1,35 @@
+{% extends 'smr_base/base.html'%}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="wkrecord-update-window">
+    <div class="title-part">
+        <div class="empty-box"></div>
+        <div class="modal-title">운동 수정하기</div>
+        <div class="empty-box"></div>
+    </div>
+    <form class="wkrecord-create-form" action="" method="post">
+        {% csrf_token %}
+        <section class="input-area">
+            <span>
+                {{ form.exercise|add_error_class:"error" }}
+            </span>
+            <span>
+                {{ form.weight|add_class:"input"|add_error_class:"error" }}kg&nbsp;&nbsp;
+                {% for error in form.weight.errors %}
+                    <div class="form-error error-message">{{ error }}</div>
+                {% endfor %}
+            </span>
+            <span>
+                {{ form.reps|add_class:"input" }}reps
+            </span>
+        </section>
+        <div class="wkrecord-btn">
+            <button class="follow-btn" type="submit">저장</button>
+            <button type="button" class="unfollow-btn" onclick="location.href='{%url 'wkrecord-list' wkrecord.wkout.id %}'">취소</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

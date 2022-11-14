@@ -1,0 +1,9 @@
+{% extends 'smr_base/base.html'%}
+{% load static %}
+
+{% block content %}
+<div style="border: solid 1px lightgray; width: 200px; height: 150px; margin-left:auto; margin-right:auto; text-align:center;">
+    <p>이미 복사한 운동루틴 입니다.</p>
+    <a href="{% url 'post-detail' wkout.id%}"><div>돌아가기</div></a>
+</div>
+{% endblock content %}

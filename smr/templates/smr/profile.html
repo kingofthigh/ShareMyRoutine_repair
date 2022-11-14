@@ -1,0 +1,128 @@
+{% extends 'smr_base/base_with_navbar.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} | ShareMyRoutine{% endblock title %}
+
+
+{% block content %}
+<div class="profile-main">
+    <div class="profile-header">
+        <div class="post_list_profile_photo_box" style="background-image: url('{{ profile_user.profile.profile_pic.url }}')"></div>
+        <section class="profile_info">
+            <div class="profile-id">{{ profile_user.username }} | {% if profile_user.profile.nickname %}{{ profile_user.profile.nickname }}{% endif %}</div>
+            <div class="profile-follow">
+                <a href="{% url 'user-post-list' profile_user.id %}" style="text-decoration:none; color: inherit;text-align:center;">
+                    게시글<br>{{ profile_user.posts.count }}
+                </a>
+                <span>&nbsp;|&nbsp;</span>
+                <span id="follower" style="text-align: center">팔로워<br>{{ profile_user.followers.count }}</span>
+                <div id="follower-modal" class="modal_overlay_follower">
+                    <div class="modal_window_follow">
+                        <div style="font-size: 21px; font-weight:bold; margin-bottom: 20px;">팔로워</div>
+                        <div class="follow-list">
+                            {% for follower in followers %}
+                                <a class="each-follow" style="text-decoration: none; color:inherit;" href="{% url 'profile' follower.id %}"><div class="profile-photo-follow" style="background-image: url('{{ follower.profile.profile_pic.url }}')"></div>
+                                    &nbsp;<span style="margin-top: 5px; margin-left: 10px;">{{ follower.username }}</span></a>
+                            {% endfor %}
+                        </div>
+                        <div style="margin-top: 15px;" id="close-follower">닫기</div>
+                    </div>
+                </div>
+
+                <span>&nbsp;|&nbsp;</span>
+                <span id="following" style="text-align: center">팔로잉<br>{{ profile_user.following.count }}</span>
+                <div id="following-modal" class="modal_overlay_following">
+                    <div class="modal_window_follow">
+                        <div style="font-size: 21px; font-weight:bold; margin-bottom: 20px;">팔로잉</div>
+                        <div class="follow-list">
+                            {% for following in followings %}
+                                <a class="each-follow" style="text-decoration: none; color:inherit;" href="{% url 'profile' following.id %}"><div class="profile-photo-follow" style="background-image: url('{{ following.profile.profile_pic.url }}')"></div>
+                                    &nbsp;<span style="margin-top: 5px; margin-left: 10px;">{{ following.username }}</span></a>
+                            {% endfor %}
+                        </div>
+                        <div style="margin-top: 15px;" id="close-following">닫기</div>
+                    </div>
+                </div>
+                &nbsp;&nbsp;
+                {% if user != profile_user %}
+                    <form action="{% url 'process-follow' profile_user.id %}" method="post">
+                        {% csrf_token %}
+                        {% if is_following %}
+                            <button class="unfollow-btn">
+                                팔로잉
+                            </button>
+                        {% else %}
+                            <button class="follow-btn">
+                                팔로우
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+            <div class="profile-intro">{{ profile_user.profile.intro }}</div>
+            <a href="{% url 'user-post-list' profile_user.id %}" style="font-size: 10px; text-decoration:none;color: inherit; font-weight: 200px;">
+                {% if profile_user == user %}
+                    <b>내 전체 게시글 보기</b>
+                {% else %}
+                    <b>{{ profile_user.username }}님의 전체 게시글 보기</b>
+                {% endif %}
+            </a>
+        </section>
+    </div>
+    <div class="profile-content">
+        <div class="profile-menu-name">
+            <p><b>회원 정보<br>*<br>3대 운동 기록</b></p>
+        </div>
+        <div class="wall"></div>
+        <section class="profile_info_detail">
+            <div class="career">경력: {{ profile_user.profile.career }}</div>
+            <div class="height">신장(키): {{profile_user.profile.height }}</div>
+            <div class="weight">체중: {{ profile_user.profile.weight }}</div>
+            <div class="muscle_mass">골격근량: {{ profile_user.profile.muscle_mass }}</div>
+            <div class="body_fat">체지방량: {{profile_user.profile.body_fat }}</div>
+        </section>
+        <section class="profile-three">
+            <div class="squat">스쿼트: {{ profile_user.profile.squat }}</div>
+            <div class="squat">데드 리프트: {{ profile_user.profile.deadlift }}</div>
+            <div class="squat">벤치 프레스: {{ profile_user.profile.benchpress }}</div>
+        </section>
+    </div>
+    {% if profile_user == user %}
+    <div class="profile-edit">
+        <a class="edit" href="{% url 'profile-update' %}">프로필 수정</a> |
+        <a class="edit" href="{% url 'account_change_password' %}">비밀번호 변경</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    const modalfollower = document.getElementById("follower-modal");
+    const buttonfollowerlist = document.getElementById("follower");
+    buttonfollowerlist.addEventListener("click", e => {
+        modalfollower.style.display = "flex";
+        document.body.style.overflowY = "hidden";
+    });
+
+    const buttonClosefollower = document.getElementById("close-follower");
+    buttonClosefollower.addEventListener("click", e => {
+        modalfollower.style.display = "none";
+        document.body.style.overflowY = 'visible';
+    })
+
+
+    const modalfollowing = document.getElementById("following-modal");
+    const buttonfollowinglist = document.getElementById("following");
+    buttonfollowinglist.addEventListener("click", e => {
+        modalfollowing.style.display = "flex";
+        document.body.style.overflowY = "hidden";
+    });
+
+    const buttonClosefollowing = document.getElementById("close-following");
+    buttonClosefollowing.addEventListener("click", e => {
+        modalfollowing.style.display = "none";
+        document.body.style.overflowY = 'visible';
+    })
+</script>
+
+
+{% endblock content %}

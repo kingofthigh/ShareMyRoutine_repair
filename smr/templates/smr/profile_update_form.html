@@ -1,0 +1,130 @@
+{% extends 'smr_base/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}프로필 수정 | ShareMyRoutine{% endblock title %}
+
+{% block content %}
+<div class="profile-main">
+    <div class="welcome">
+        <p class="wel">프로필 수정</p>
+        <p>운동루틴을 공유하려면 꼭 작성해주셔야 합니다!</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" autocomplete="off">
+        {% csrf_token %} 
+        <div class="profile-header-form">
+            <div class="profile-pic-contain">
+                <div class="post_list_profile_photo_box" style="background-color: gray; background-image: url('{{ user.profile.profile_pic.url }}')"></div>
+                <div style="margin-left: 20px;width: 190px;">
+                    {{ form.profile_pic }}
+                </div>    
+            </div>
+            <section class="profile_info">
+                <div class="profile-id">
+                    {{ profile_user.username }}
+                    <div class="compo">
+                        {{ form.nickname |add_class:"input-profile"|attr:"placeholder:닉네임"|add_error_class:"error"}}
+                        {% for error in form.nickname.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="profile-intro">
+                    <div class="compo">
+                        {{ form.intro |add_class:"input-profile-txt"|attr:"placeholder:대화명"|add_error_class:"error"}}
+                        {% for error in form.intro.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+            </section>
+        </div>
+        <div class="profile-content">
+            <div class="profile-menu-name-set">
+                <p style="height: 70px;"><b>신체 스펙<br>*<br>3대 운동 기록</b></p>
+            </div>
+            <div class="wall"></div>
+            <section class="profile_info_detail">
+                <div class="career">
+                    <div class="compo">
+                        {{ form.career |add_class:"input-profile"|attr:"placeholder:경력"|add_error_class:"error"}}
+                        {% for error in form.career.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="age">
+                    <div class="compo">
+                        {{ form.age |add_class:"input-profile"|attr:"placeholder:나이"|add_error_class:"error"}}
+                        {% for error in form.age.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="height">
+                    <div class="compo">
+                        {{ form.height |add_class:"input-profile"|attr:"placeholder:신장(키)"|add_error_class:"error"}}
+                        {% for error in form.height.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="weight">
+                    <div class="compo">
+                        {{ form.weight |add_class:"input-profile"|attr:"placeholder:체중"|add_error_class:"error"}}
+                        {% for error in form.weight.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="muscle_mass">
+                    <div class="compo">
+                        {{ form.muscle_mass |add_class:"input-profile"|attr:"placeholder:골격근량"|add_error_class:"error"}}
+                        {% for error in form.muscle_mass.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="body_fat">
+                    <div class="compo">
+                        {{ form.body_fat |add_class:"input-profile"|attr:"placeholder:체지방율"|add_error_class:"error"}}
+                        {% for error in form.body_fat.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+            </section>
+            <section class="profile-three">
+                <div class="squat">
+                    <div class="compo">
+                        {{ form.squat |add_class:"input-profile"|attr:"placeholder:스쿼트 1rm"|add_error_class:"error"}}
+                        {% for error in form.squat.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="squat">
+                    <div class="compo">
+                        {{ form.deadlift |add_class:"input-profile"|attr:"placeholder:데드리프트 1rm"|add_error_class:"error"}}
+                        {% for error in form.deadlift.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+                <div class="squat">
+                    <div class="compo">
+                        {{ form.benchpress |add_class:"input-profile"|attr:"placeholder:벤치프레스 1rm"|add_error_class:"error"}}
+                        {% for error in form.benchpress.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    <div>
+                </div>
+            </section>
+        </div>
+        <div class="buttons">
+            <button class="profile-btn" type="submit">완료</button>
+            <button type="button" class="profile-btn" onclick="location.href='{% url 'profile' user.id%}';">취소</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

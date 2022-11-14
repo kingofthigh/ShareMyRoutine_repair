@@ -1,0 +1,30 @@
+{% extends 'smr_base/base_with_navbar.html' %}
+{% load static %}
+
+{% block title %}운동 기록 | ShareMyRoutine{% endblock title %}
+
+{% block content %}
+<div class="main-contents">
+    <div class="left-content">
+        <div class="semi-title"><b>운동 기록</b></div>
+        <a style="text-decoration: none; color: inherit;" href="{% url 'wkout-create' %}"><div class="plus-wkout"><b>운동하기<br><img class="plus-icon" src="{% static 'smr/icons/plus.png'%}"></b></div></a>
+        {% for wkout in wkouts %}
+            <div class="wkout-list"><a class="wkout-link" href="{% url 'wkrecord-list' wkout.id %}"><p><b>{{ wkout.dt_created|date:"Y/m/d" }}</b>&nbsp;&nbsp;{{wkout.memo}}</p></a></div>
+        {% endfor %}
+    </div>
+    <div class='right-content-wklist'>
+        <p class="right-title">following's Workout!</p>
+        {% if posts %}
+            {% for post in posts %}
+                <div class="recent-post">
+                    <div class="profile-photo-small" style="background-image: url('{{ post.author.profile.profile_pic.url }}')"></div>
+                    <div class="profile-name-small">{{ post.author.username}}<br>{{post.dt_created|date:"Y/m/d"}}</div>
+                    <div class="workout-part-small">{{ post.wkout.ex_part }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>아직 팔로우하는 사람들의 운동이 없습니다.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,29 @@
+{% extends 'smr_base/base_with_navbar.html' %}
+{% load static %}
+
+{% block title %}게시물 | ShareMyRoutine{% endblock title %}
+
+{% block content %}
+<div class="post-main">
+    {% for post in user_posts%}
+        <a class="post-detail-hl" href="{% url 'post-detail' post.id %}">
+            <div class="mini-post">
+                <div class="post-pf">
+                    <div class="profile-photo-small" style="background-image: url({{ post.author.profile.profile_pic.url }})"></div>
+                    <div class="profile-name-small">
+                        {{ post.author.username }}<br> {{post.dt_created|date:"Y/m/d"}}
+                    </div>
+                    <div class="workout-part-small">
+                        {{post.wkout.ex_part}}
+                    </div>
+                </div>
+                <div class="mini-post-photo-box" style="background-image: url('{{ post.image.url }}');"></div>
+                <div class="mini-post-memo">
+                    <p><img style="width:8px; height:8px;" src="{% static 'smr/icons/full_like.png' %}">&nbsp;{{ post.likes.count }}</p>
+                    <p>{{ post.wkout.memo }}</p>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+{% endblock content %}
